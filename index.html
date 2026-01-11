@@ -12,6 +12,8 @@
         /* ========================================
            1. FONTS & VARIABLES
            ========================================
+           We use CSS Variables (:root) to define colors once. 
+           If we want to change the theme later, we just change these values.
         */
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap');
 
@@ -26,21 +28,28 @@
         /* ========================================
            2. GLOBAL RESET
            ========================================
+           Standard CSS practice to remove default browser margins/padding.
         */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; 
+            overflow: hidden; /* Prevents scrollbars entirely */
             font-family: 'Lato', sans-serif;
             color: #fff;
             background-color: #000;
-            touch-action: manipulation;
+            touch-action: manipulation; /* Improves button tap speed on mobile */
         }
 
-        /* BACKGROUND IMAGE LOGIC (The <picture> tag)
-           We style the img inside the picture tag to fill the screen.
+        /* ========================================
+           3. BACKGROUND LAYERS
+           ========================================
+        */
+        
+        /* The Background Image
+           We use 'object-fit: cover' to ensure the image always fills the screen,
+           cropping the edges if necessary, so there are no empty black bars.
         */
         .bg-fullscreen {
             position: fixed;
@@ -48,48 +57,25 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            object-fit: cover; /* Ensures image covers screen without stretching */
+            z-index: -1;      /* Puts it behind everything */
+            object-fit: cover;
         }
 
-        /* LANDSCAPE WARNING SCREEN
-           This div is hidden by default. It only appears if the user 
-           turns their phone sideways.
+        /* Dark Overlay
+           Adds a semi-transparent black layer over the GIF.
+           This makes the white text readable regardless of how bright the GIF is.
         */
-        #rotate-message {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #0e0e0e;
-            z-index: 9999; /* Sit on top of EVERYTHING */
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* CSS MEDIA QUERY FOR LANDSCAPE
-           If screen is smaller than 900px (mobile/tablet) AND in landscape...
-        */
-        @media only screen and (max-width: 900px) and (orientation: landscape) {
-            #rotate-message {
-                display: flex; /* Show the warning */
-            }
-            .container {
-                display: none; /* Hide the quiz */
-            }
-        }
-
-        /* LAYERS */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.2); 
+            background-color: rgba(0, 0, 0, 0.4); 
             z-index: 0;
-            pointer-events: none;
+            pointer-events: none; /* Allows clicks to pass through this layer */
         }
 
+        /* Ash Canvas
+           This invisible container holds the Javascript-drawn particle effects.
+        */
         #ashCanvas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -98,8 +84,34 @@
         }
 
         /* ========================================
-           3. MAIN LAYOUT
+           4. MOBILE ORIENTATION GUARD
            ========================================
+           This div is hidden by default. We use Media Queries to show it
+           ONLY if the user turns their phone sideways (Landscape).
+        */
+        #rotate-message {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0e0e0e;
+            z-index: 9999; /* Highest Z-Index ensures it blocks everything */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Media Query: If screen is small AND landscape... */
+        @media only screen and (max-width: 900px) and (orientation: landscape) {
+            #rotate-message { display: flex; } /* Show warning */
+            .container { display: none; }      /* Hide app */
+        }
+
+        /* ========================================
+           5. LAYOUT CONTAINER
+           ========================================
+           Flexbox is used here to perfectly center content vertically and horizontally.
         */
         .container {
             position: relative;
@@ -112,12 +124,15 @@
             width: 100%;
             text-align: center;
             padding: 20px;
-            box-sizing: border-box;
+            box-sizing: border-box; /* Ensures padding doesn't increase width */
         }
 
-        /* Start Screen */
+        /* ========================================
+           6. START SCREEN & INPUTS
+           ========================================
+        */
         #start-screen {
-            transition: opacity 1s ease;
+            transition: opacity 1s ease; /* Allows for a smooth fade-out animation */
             max-width: 600px;
             width: 100%;
             display: flex;
@@ -146,9 +161,11 @@
             margin-bottom: 20px;
             width: 80%;
             max-width: 400px;
-            outline: none;
+            outline: none; /* Removes the default browser blue outline */
             transition: 0.3s;
         }
+        
+        /* Visual feedback when user clicks the input */
         .name-input:focus {
             border-color: #fff;
             box-shadow: 0 0 15px var(--glow-color);
@@ -159,20 +176,24 @@
             display: flex;
             gap: 15px;
             justify-content: center;
-            flex-wrap: wrap; 
+            flex-wrap: wrap; /* Allows buttons to stack if screen is too narrow */
         }
 
         /* ========================================
-           4. QUIZ & ANIMATION
+           7. QUIZ CARD
            ========================================
         */
         .quiz-card {
             max-width: 600px;
             width: 100%;
-            display: none;
+            display: none; /* Hidden on load */
+            
+            /* Initial Animation State: Small and blurry */
             opacity: 0;
             transform: scale(0.8);
             filter: blur(10px);
+            
+            /* Physics-based ease for a "bouncy" appear effect */
             transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
@@ -183,9 +204,10 @@
             filter: blur(0);
         }
 
+        /* The fade-out animation when a question is answered */
         .quiz-card.fading-out {
             opacity: 0;
-            transform: scale(1.5);
+            transform: scale(1.5); /* Expands towards the user */
             filter: blur(20px);
             pointer-events: none;
         }
@@ -206,6 +228,10 @@
             width: 100%;
         }
 
+        /* ========================================
+           8. BUTTON STYLES
+           ========================================
+        */
         .option-btn {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255,255,255,0.6);
@@ -213,8 +239,8 @@
             padding: 15px 20px;
             font-size: 1.1rem;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            position: relative; /* Needed for the ::after pseudo-element */
+            overflow: hidden;   /* Keeps the shimmer inside the button */
             transition: all 0.3s ease;
             font-family: 'Cinzel', serif;
             font-weight: 700;
@@ -227,6 +253,7 @@
             background: rgba(255,255,255,0.1);
         }
 
+        /* The Shimmer Animation (Light beam passing through button) */
         .option-btn::after {
             content: '';
             position: absolute;
@@ -240,8 +267,42 @@
             transition: 0.7s ease-in-out;
         }
 
+        /* Standard Start/Reset Buttons */
+        .action-btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            min-width: 130px;
+        }
+        .action-btn:hover {
+            background: white;
+            color: black;
+            box-shadow: 0 0 20px white;
+        }
+
+        /* Dark buttons specifically for the parchment paper */
+        .parchment-btn {
+            color: var(--parchment-ink);
+            border-color: var(--parchment-ink);
+            margin: 5px;
+            width: 100%;
+            max-width: 250px;
+        }
+        .parchment-btn:hover {
+            background: var(--parchment-ink);
+            color: var(--parchment-bg);
+            box-shadow: 0 0 10px var(--parchment-ink);
+        }
+
         /* ========================================
-           5. RESULT PARCHMENT
+           9. RESULT PARCHMENT
            ========================================
         */
         #result-screen {
@@ -271,6 +332,7 @@
             height: 180px;
             object-fit: contain;
             margin: 20px 0;
+            /* Adds a subtle shadow to the PNG so it pops off the paper */
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
         }
 
@@ -291,39 +353,10 @@
             border-bottom: 1px solid var(--parchment-border);
         }
 
-        .action-btn {
-            padding: 12px 25px;
-            font-size: 1rem;
-            font-weight: 700;
-            background: transparent;
-            color: white;
-            border: 2px solid white;
-            font-family: 'Cinzel', serif;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-            min-width: 130px;
-        }
-        .action-btn:hover {
-            background: white;
-            color: black;
-            box-shadow: 0 0 20px white;
-        }
-
-        .parchment-btn {
-            color: var(--parchment-ink);
-            border-color: var(--parchment-ink);
-            margin: 5px;
-            width: 100%;
-            max-width: 250px;
-        }
-        .parchment-btn:hover {
-            background: var(--parchment-ink);
-            color: var(--parchment-bg);
-            box-shadow: 0 0 10px var(--parchment-ink);
-        }
-
-        /* Mobile Adjustments */
+        /* ========================================
+           10. MOBILE TWEAKS
+           ========================================
+        */
         @media only screen and (max-width: 600px) {
             h1 { font-size: 2.2rem; }
             .question-text { font-size: 1.3rem; }
@@ -364,7 +397,9 @@
         <div id="start-screen">
             <h1>The Sorting Quiz</h1>
             <p style="font-style:italic; font-size:1.2rem; margin-bottom:20px;">"Who wishes to be sorted?"</p>
+            
             <input type="text" id="user-name" class="name-input" placeholder="Enter your name..." autocomplete="off">
+            
             <div class="button-group">
                 <button class="action-btn" onclick="startQuiz(10)">Quick Sort<br><span style="font-size:0.8rem">(10 Questions)</span></button>
                 <button class="action-btn" onclick="startQuiz(29)">Full Quiz<br><span style="font-size:0.8rem">(All Questions)</span></button>
@@ -395,16 +430,17 @@
 
 <script>
     /* ========================================
-     PART 1: SETTINGS & CONFIGURATION
+     PART 1: DEVELOPER CONFIGURATION
      ========================================
     */
     
-    // --- VOLUME SETTING ---
-    // Change this number to adjust volume (0.0 to 1.0)
-    // 0.5 is 50% volume. 0.2 is 20%.
-    const AMBIENT_VOLUME = 0.5;
+    // --- AUDIO SETTINGS ---
+    // Adjust these values from 0.0 (mute) to 1.0 (max)
+    const AMBIENCE_VOLUME = 0.4; // Volume for fireplace
+    const SFX_VOLUME = 0.6;      // Volume for clicks/whooshes
 
     // --- HOUSE DATA ---
+    // Contains colors, images, and descriptions for each result.
     const HOUSE_CONFIG = {
         "Gryffindor": {
             description: "You are a warrior at heart. Defined by your courage and daring, you stand tall when others falter and fight for what is right, no matter the cost.",
@@ -428,6 +464,7 @@
         }
     };
 
+    // The list of questions.
     const ALL_QUESTIONS = [
       { id:"q1", q:"Which of the following would you most hate people to call you?", a:[{t:"Ordinary", h:"Ravenclaw"}, {t:"Ignorant", h:"Slytherin"}, {t:"Cowardly", h:"Gryffindor"}, {t:"Selfish", h:"Hufflepuff"}]},
       { id:"q2", q:"After you have died, how would you like people to remember you?", a:[{t:"Miss you, but smile", h:"Hufflepuff"}, {t:"Ask for stories of your adventures", h:"Gryffindor"}, {t:"Think with admiration of your achievements", h:"Slytherin"}, {t:"I don't care what people think after I'm dead", h:"Ravenclaw"}]},
@@ -461,7 +498,7 @@
     ];
 
     /* ========================================
-     PART 2: VARIABLES & SOUND SETUP
+     PART 2: GAME STATE & AUDIO
      ========================================
     */
     let scores = { Gryffindor: 0, Ravenclaw: 0, Hufflepuff: 0, Slytherin: 0 };
@@ -473,13 +510,14 @@
     const clickFx = document.getElementById('click-sound');
     const revealFx = document.getElementById('reveal-sound');
 
-    // Initialize Default Volume using the setting at the top
-    ambience.volume = AMBIENT_VOLUME;
-    clickFx.volume = AMBIENT_VOLUME;
-    revealFx.volume = AMBIENT_VOLUME;
+    // Initialize Volumes based on Developer Settings
+    ambience.volume = AMBIENCE_VOLUME;
+    clickFx.volume = SFX_VOLUME;
+    revealFx.volume = SFX_VOLUME;
 
-    // --- AUTO-START AUDIO ---
-    // Try to play immediately on load. If blocked, play on first click.
+    // --- AUTO-START AUDIO LOGIC ---
+    // Browsers block audio until user interaction. We try to play immediately.
+    // If it fails, we wait for the first click anywhere on the body.
     window.addEventListener('load', () => {
         const playPromise = ambience.play();
         if (playPromise !== undefined) {
@@ -492,18 +530,17 @@
         }
     });
 
-    // --- PAGE VISIBILITY API (Mute on Screen Lock/Tab Switch) ---
+    // --- PAGE VISIBILITY API ---
+    // Mute sounds if user switches tabs or locks phone screen.
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
-            // Screen locked or tab hidden: Pause Audio
             ambience.pause();
         } else {
-            // Screen unlocked or tab visible: Resume Audio
             ambience.play().catch(e => console.log("Resume failed"));
         }
     });
 
-    // Helper: Fisher-Yates Shuffle
+    // Fisher-Yates Shuffle Helper (Randomizes Arrays)
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -513,7 +550,7 @@
     }
 
     /* ========================================
-     PART 3: GAMEPLAY FUNCTIONS
+     PART 3: QUIZ LOGIC
      ========================================
     */
 
@@ -527,14 +564,16 @@
         }
         userName = name; 
 
-        // Ensure ambience is playing
+        // Ensure ambience plays even if auto-start failed earlier
         ambience.play().catch(e => console.log("Audio waiting..."));
 
+        // Shuffle questions and select the requested amount
         let shuffled = [...ALL_QUESTIONS]; 
         shuffleArray(shuffled);
         const limit = Math.min(numToAsk, shuffled.length);
         activeQuestions = shuffled.slice(0, limit);
 
+        // UI Transition: Fade out start, fade in quiz
         const startScreen = document.getElementById('start-screen');
         startScreen.style.opacity = '0';
         setTimeout(() => {
@@ -554,6 +593,7 @@
         const qText = document.getElementById('question-text');
         const optsContainer = document.getElementById('options-container');
 
+        // Reset animation state
         card.classList.remove('fading-out');
         card.style.display = 'block'; 
         setTimeout(() => {
@@ -563,6 +603,7 @@
         qText.innerText = qData.q;
         optsContainer.innerHTML = '';
 
+        // Randomize answer order
         let randomizedAnswers = [...qData.a];
         shuffleArray(randomizedAnswers);
 
@@ -583,6 +624,7 @@
             scores[houseName]++;
         }
 
+        // Animate out
         const card = document.getElementById('quiz-container');
         card.classList.remove('active');
         card.classList.add('fading-out'); 
@@ -597,6 +639,7 @@
     function finishQuiz() {
         document.getElementById('quiz-container').style.display = 'none';
 
+        // Tie-breaker logic (Priority: G > R > H > S)
         let winner = 'Gryffindor';
         let maxScore = scores['Gryffindor'];
 
@@ -607,6 +650,10 @@
         displayResult(winner);
     }
 
+    /* ========================================
+     PART 4: RESULT SCREEN
+     ========================================
+    */
     function displayResult(winnerName) {
         const resultScreen = document.getElementById('result-screen');
         const messageEl = document.getElementById('result-message');
@@ -616,7 +663,7 @@
         const winnerConfig = HOUSE_CONFIG[winnerName];
 
         resultScreen.style.display = 'flex';
-        void resultScreen.offsetWidth; 
+        void resultScreen.offsetWidth; // Force Reflow
         
         revealFx.play();
 
@@ -624,13 +671,14 @@
             resultScreen.style.opacity = '1';
         }, 100);
 
-        // Set Image & Text
+        // Update DOM
         houseImg.src = winnerConfig.image;
         houseImg.setAttribute("crossorigin", "anonymous"); 
 
         messageEl.innerText = `${userName} has been sorted into...`;
         descEl.innerText = winnerConfig.description;
 
+        // Speak result
         const msg = new SpeechSynthesisUtterance();
         msg.rate = 0.8; 
         msg.pitch = 0.5;
@@ -640,10 +688,6 @@
         }, 1000);
     }
 
-    /* ========================================
-     PART 5: UTILITIES
-     ========================================
-    */
     function downloadResult() {
         const element = document.getElementById("capture-area");
         
@@ -680,7 +724,10 @@
         }, 1000);
     }
 
-    // --- ASH PARTICLES ANIMATION ---
+    /* ========================================
+     PART 5: VISUALS (ASH PARTICLES)
+     ========================================
+    */
     const canvas = document.getElementById('ashCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
