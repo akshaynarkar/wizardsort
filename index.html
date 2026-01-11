@@ -57,12 +57,12 @@
 
         /* DARK OVERLAY
          This semi-transparent black layer ensures white text is readable 
-         regardless of how bright your background GIF is.
+         regardless of how bright your  GIF is.
         */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); 
+            background-color: rgba(0, 0, 0, 0.2); 
             z-index: 0;
             pointer-events: none; /* Allows clicks to pass through to buttons */
         }
@@ -341,7 +341,7 @@
 </head>
 <body>
 
-    <img id="bg-video" src="Background_Logo_Lite.gif" alt="Magical Background">
+    <img id="bg-video" src="background.gif" alt="Magical Background">
 
     <div class="overlay"></div>
     <canvas id="ashCanvas"></canvas>
