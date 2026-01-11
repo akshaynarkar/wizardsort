@@ -97,28 +97,6 @@
             pointer-events: none;
         }
 
-        /* VOLUME CONTROL */
-        .volume-control {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.3);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-family: 'Lato', sans-serif;
-            font-size: 0.8rem;
-        }
-
-        input[type=range] {
-            accent-color: #ecb939;
-            cursor: pointer;
-        }
-
         /* ========================================
            3. MAIN LAYOUT
            ========================================
@@ -353,7 +331,6 @@
             #house-image { width: 140px; height: 140px; }
             .button-group { flex-direction: column; align-items: center; }
             .action-btn { width: 100%; max-width: 300px; }
-            .volume-control { top: 10px; right: 10px; padding: 5px; }
         }
     </style>
 </head>
@@ -371,11 +348,6 @@
 
     <div class="overlay"></div>
     <canvas id="ashCanvas"></canvas>
-
-    <div class="volume-control">
-        <span>Sound:</span>
-        <input type="range" id="volume-slider" min="0" max="100" value="50">
-    </div>
 
     <audio id="ambience-sound" loop>
         <source src="assets/fireplace.mp3" type="audio/mpeg"> 
@@ -406,8 +378,11 @@
 
         <div id="result-screen">
             <div class="parchment-box" id="capture-area">
+                
                 <p class="result-text" id="result-message"></p>
+
                 <img id="house-image" src="" alt="House Crest" crossorigin="anonymous">
+                
                 <p class="house-description" id="house-desc"></p>
                 
                 <div data-html2canvas-ignore="true">
@@ -420,9 +395,16 @@
 
 <script>
     /* ========================================
-     PART 1: CONFIGURATION
+     PART 1: SETTINGS & CONFIGURATION
      ========================================
     */
+    
+    // --- VOLUME SETTING ---
+    // Change this number to adjust volume (0.0 to 1.0)
+    // 0.5 is 50% volume. 0.2 is 20%.
+    const AMBIENT_VOLUME = 0.5;
+
+    // --- HOUSE DATA ---
     const HOUSE_CONFIG = {
         "Gryffindor": {
             description: "You are a warrior at heart. Defined by your courage and daring, you stand tall when others falter and fight for what is right, no matter the cost.",
@@ -490,20 +472,11 @@
     const ambience = document.getElementById('ambience-sound');
     const clickFx = document.getElementById('click-sound');
     const revealFx = document.getElementById('reveal-sound');
-    const volSlider = document.getElementById('volume-slider');
 
-    // Volume Control Logic
-    volSlider.addEventListener('input', function() {
-        const volumeValue = this.value / 100; 
-        ambience.volume = volumeValue;
-        clickFx.volume = volumeValue;
-        revealFx.volume = volumeValue;
-    });
-
-    // Initialize Default Volume
-    ambience.volume = 0.5;
-    clickFx.volume = 0.5;
-    revealFx.volume = 0.5;
+    // Initialize Default Volume using the setting at the top
+    ambience.volume = AMBIENT_VOLUME;
+    clickFx.volume = AMBIENT_VOLUME;
+    revealFx.volume = AMBIENT_VOLUME;
 
     // --- AUTO-START AUDIO ---
     // Try to play immediately on load. If blocked, play on first click.
@@ -526,10 +499,7 @@
             ambience.pause();
         } else {
             // Screen unlocked or tab visible: Resume Audio
-            // (Only if user hasn't manually turned volume to 0)
-            if (volSlider.value > 0) {
-                ambience.play().catch(e => console.log("Resume failed"));
-            }
+            ambience.play().catch(e => console.log("Resume failed"));
         }
     });
 
