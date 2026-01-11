@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <title>The Sorting Quiz</title>
     
@@ -10,9 +10,8 @@
     
     <style>
         /* ========================================
-           1. CSS VARIABLES & FONTS
+           1. FONTS & VARIABLES
            ========================================
-           Variables (defined in :root) let us change colors everywhere by changing one line.
         */
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap');
 
@@ -25,7 +24,7 @@
         }
 
         /* ========================================
-           2. GLOBAL RESET & BODY
+           2. GLOBAL RESET
            ========================================
         */
         body, html {
@@ -33,36 +32,64 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Prevents scrollbars */
+            overflow: hidden; 
             font-family: 'Lato', sans-serif;
             color: #fff;
-            touch-action: manipulation; /* Makes buttons respond faster on mobile */
+            background-color: #000;
+            touch-action: manipulation;
         }
 
-        /* BACKGROUND IMAGE
-           We use an <img> tag with object-fit: cover so it stretches nicely 
-           without distorting, unlike some CSS background properties.
+        /* BACKGROUND IMAGE LOGIC (The <picture> tag)
+           We style the img inside the picture tag to fill the screen.
         */
-        #bg-video {
+        .bg-fullscreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Puts it behind everything else */
-            object-fit: cover;
+            z-index: -1;
+            object-fit: cover; /* Ensures image covers screen without stretching */
         }
 
-        /* Dark overlay to make text readable against the bright background */
+        /* LANDSCAPE WARNING SCREEN
+           This div is hidden by default. It only appears if the user 
+           turns their phone sideways.
+        */
+        #rotate-message {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0e0e0e;
+            z-index: 9999; /* Sit on top of EVERYTHING */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* CSS MEDIA QUERY FOR LANDSCAPE
+           If screen is smaller than 900px (mobile/tablet) AND in landscape...
+        */
+        @media only screen and (max-width: 900px) and (orientation: landscape) {
+            #rotate-message {
+                display: flex; /* Show the warning */
+            }
+            .container {
+                display: none; /* Hide the quiz */
+            }
+        }
+
+        /* LAYERS */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.4); 
             z-index: 0;
-            pointer-events: none; /* Lets clicks pass through to buttons below */
+            pointer-events: none;
         }
 
-        /* Canvas for the floating ash particles */
         #ashCanvas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -70,16 +97,12 @@
             pointer-events: none;
         }
 
-        /* ========================================
-           3. VOLUME CONTROL (NEW FEATURE)
-           ========================================
-           This styles the slider in the top right corner.
-        */
+        /* VOLUME CONTROL */
         .volume-control {
             position: absolute;
             top: 20px;
             right: 20px;
-            z-index: 100; /* High z-index to sit on top of everything */
+            z-index: 100;
             background: rgba(0, 0, 0, 0.6);
             padding: 10px;
             border-radius: 20px;
@@ -91,14 +114,13 @@
             font-size: 0.8rem;
         }
 
-        /* Styling the slider range input */
         input[type=range] {
-            accent-color: #ecb939; /* Gold color for the slider handle */
+            accent-color: #ecb939;
             cursor: pointer;
         }
 
         /* ========================================
-           4. MAIN LAYOUT
+           3. MAIN LAYOUT
            ========================================
         */
         .container {
@@ -115,9 +137,9 @@
             box-sizing: border-box;
         }
 
-        /* Start Screen Styling */
+        /* Start Screen */
         #start-screen {
-            transition: opacity 1s ease; /* Smooth fade out effect */
+            transition: opacity 1s ease;
             max-width: 600px;
             width: 100%;
             display: flex;
@@ -151,7 +173,7 @@
         }
         .name-input:focus {
             border-color: #fff;
-            box-shadow: 0 0 15px var(--glow-color); /* Glow effect on focus */
+            box-shadow: 0 0 15px var(--glow-color);
             background: rgba(0, 0, 0, 0.8);
         }
 
@@ -163,17 +185,17 @@
         }
 
         /* ========================================
-           5. QUIZ CARD ANIMATIONS
+           4. QUIZ & ANIMATION
            ========================================
         */
         .quiz-card {
             max-width: 600px;
             width: 100%;
-            display: none; /* Hidden until quiz starts */
+            display: none;
             opacity: 0;
-            transform: scale(0.8); /* Starts slightly smaller */
-            filter: blur(10px);    /* Starts blurry */
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
+            transform: scale(0.8);
+            filter: blur(10px);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .quiz-card.active {
@@ -183,12 +205,11 @@
             filter: blur(0);
         }
 
-        /* The animation when a question is answered */
         .quiz-card.fading-out {
             opacity: 0;
-            transform: scale(1.5); /* Grows larger */
-            filter: blur(20px);    /* Blurs out */
-            pointer-events: none;  /* Prevents clicking while fading */
+            transform: scale(1.5);
+            filter: blur(20px);
+            pointer-events: none;
         }
 
         .question-text {
@@ -207,7 +228,6 @@
             width: 100%;
         }
 
-        /* Option Buttons */
         .option-btn {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255,255,255,0.6);
@@ -229,7 +249,6 @@
             background: rgba(255,255,255,0.1);
         }
 
-        /* The Shimmer Effect on Hover */
         .option-btn::after {
             content: '';
             position: absolute;
@@ -244,7 +263,7 @@
         }
 
         /* ========================================
-           6. RESULT PARCHMENT (Modified)
+           5. RESULT PARCHMENT
            ========================================
         */
         #result-screen {
@@ -269,7 +288,6 @@
             position: relative;
         }
 
-        /* Made the image slightly larger as requested since text is gone */
         #house-image {
             width: 180px; 
             height: 180px;
@@ -278,10 +296,9 @@
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
         }
 
-        /* Removed styling for the House Name text since we are hiding it */
         .result-text {
             font-family: 'Cinzel', serif;
-            font-size: 1.5rem; /* Larger introduction text */
+            font-size: 1.5rem;
             margin-bottom: 5px;
             font-weight: 700;
         }
@@ -296,7 +313,6 @@
             border-bottom: 1px solid var(--parchment-border);
         }
 
-        /* Start/Restart Buttons */
         .action-btn {
             padding: 12px 25px;
             font-size: 1rem;
@@ -316,7 +332,6 @@
             box-shadow: 0 0 20px white;
         }
 
-        /* Result Buttons (Dark style for paper) */
         .parchment-btn {
             color: var(--parchment-ink);
             border-color: var(--parchment-ink);
@@ -330,7 +345,7 @@
             box-shadow: 0 0 10px var(--parchment-ink);
         }
 
-        /* Mobile Breakpoints */
+        /* Mobile Adjustments */
         @media only screen and (max-width: 600px) {
             h1 { font-size: 2.2rem; }
             .question-text { font-size: 1.3rem; }
@@ -344,7 +359,15 @@
 </head>
 <body>
 
-    <img id="bg-video" src="assets/background.gif" alt="Magical Background"> 
+    <picture>
+        <source media="(max-width: 768px)" srcset="assets/background_mobile.gif">
+        <img id="bg-video" class="bg-fullscreen" src="assets/background.gif" alt="Magical Background">
+    </picture>
+
+    <div id="rotate-message">
+        <h1 style="font-size: 1.5rem; margin-bottom: 20px;">Please Rotate Your Device</h1>
+        <p>The magic works best in Portrait mode.</p>
+    </div>
 
     <div class="overlay"></div>
     <canvas id="ashCanvas"></canvas>
@@ -369,9 +392,7 @@
         <div id="start-screen">
             <h1>The Sorting Quiz</h1>
             <p style="font-style:italic; font-size:1.2rem; margin-bottom:20px;">"Who wishes to be sorted?"</p>
-            
             <input type="text" id="user-name" class="name-input" placeholder="Enter your name..." autocomplete="off">
-            
             <div class="button-group">
                 <button class="action-btn" onclick="startQuiz(10)">Quick Sort<br><span style="font-size:0.8rem">(10 Questions)</span></button>
                 <button class="action-btn" onclick="startQuiz(29)">Full Quiz<br><span style="font-size:0.8rem">(All Questions)</span></button>
@@ -385,11 +406,8 @@
 
         <div id="result-screen">
             <div class="parchment-box" id="capture-area">
-                
                 <p class="result-text" id="result-message"></p>
-
                 <img id="house-image" src="" alt="House Crest" crossorigin="anonymous">
-                
                 <p class="house-description" id="house-desc"></p>
                 
                 <div data-html2canvas-ignore="true">
@@ -404,12 +422,9 @@
     /* ========================================
      PART 1: CONFIGURATION
      ========================================
-     Defining the House data. 
-     Note: Use 'assets/lion.png' etc. based on your GitHub folder.
     */
     const HOUSE_CONFIG = {
         "Gryffindor": {
-            // Poetic description
             description: "You are a warrior at heart. Defined by your courage and daring, you stand tall when others falter and fight for what is right, no matter the cost.",
             color: "#740001", 
             image: "assets/lion.png" 
@@ -431,7 +446,6 @@
         }
     };
 
-    // The Master list of questions. (Shortened in comments, full in code)
     const ALL_QUESTIONS = [
       { id:"q1", q:"Which of the following would you most hate people to call you?", a:[{t:"Ordinary", h:"Ravenclaw"}, {t:"Ignorant", h:"Slytherin"}, {t:"Cowardly", h:"Gryffindor"}, {t:"Selfish", h:"Hufflepuff"}]},
       { id:"q2", q:"After you have died, how would you like people to remember you?", a:[{t:"Miss you, but smile", h:"Hufflepuff"}, {t:"Ask for stories of your adventures", h:"Gryffindor"}, {t:"Think with admiration of your achievements", h:"Slytherin"}, {t:"I don't care what people think after I'm dead", h:"Ravenclaw"}]},
@@ -473,16 +487,12 @@
     let userName = "";
     let activeQuestions = []; 
 
-    // Getting the HTML Audio elements by their IDs
     const ambience = document.getElementById('ambience-sound');
     const clickFx = document.getElementById('click-sound');
     const revealFx = document.getElementById('reveal-sound');
     const volSlider = document.getElementById('volume-slider');
 
-    // --- FEATURE 1: VOLUME CONTROL LOGIC ---
-    // When the slider moves, we update the volume of all 3 sounds.
-    // Audio volume ranges from 0.0 (mute) to 1.0 (max).
-    // Our slider is 0 to 100, so we divide by 100.
+    // Volume Control Logic
     volSlider.addEventListener('input', function() {
         const volumeValue = this.value / 100; 
         ambience.volume = volumeValue;
@@ -490,30 +500,40 @@
         revealFx.volume = volumeValue;
     });
 
-    // Initialize volume on load
+    // Initialize Default Volume
     ambience.volume = 0.5;
     clickFx.volume = 0.5;
     revealFx.volume = 0.5;
 
-    // --- FEATURE 2: AUTO-START AMBIENCE LOGIC ---
-    // Browsers block audio from playing automatically to prevent annoyance.
-    // We try to play it immediately. If it fails (caught by .catch),
-    // we set up a "one-time" listener so it plays the moment the user clicks ANYWHERE.
+    // --- AUTO-START AUDIO ---
+    // Try to play immediately on load. If blocked, play on first click.
     window.addEventListener('load', () => {
         const playPromise = ambience.play();
-        
         if (playPromise !== undefined) {
             playPromise.catch(error => {
-                console.log("Auto-play prevented by browser. Waiting for user interaction.");
-                // Add a listener to the whole document body
+                console.log("Auto-play blocked. Waiting for click.");
                 document.body.addEventListener('click', () => {
                     ambience.play();
-                }, { once: true }); // 'once: true' means it runs only the first time you click
+                }, { once: true });
             });
         }
     });
 
-    // Helper: Fisher-Yates Shuffle (Randomizes array order)
+    // --- PAGE VISIBILITY API (Mute on Screen Lock/Tab Switch) ---
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            // Screen locked or tab hidden: Pause Audio
+            ambience.pause();
+        } else {
+            // Screen unlocked or tab visible: Resume Audio
+            // (Only if user hasn't manually turned volume to 0)
+            if (volSlider.value > 0) {
+                ambience.play().catch(e => console.log("Resume failed"));
+            }
+        }
+    });
+
+    // Helper: Fisher-Yates Shuffle
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -537,16 +557,14 @@
         }
         userName = name; 
 
-        // Ensure ambience is playing if it hasn't started yet
+        // Ensure ambience is playing
         ambience.play().catch(e => console.log("Audio waiting..."));
 
-        // Shuffle all questions and pick the number requested (10 or 29)
         let shuffled = [...ALL_QUESTIONS]; 
         shuffleArray(shuffled);
         const limit = Math.min(numToAsk, shuffled.length);
         activeQuestions = shuffled.slice(0, limit);
 
-        // Fade out start screen, wait 1 second, show question
         const startScreen = document.getElementById('start-screen');
         startScreen.style.opacity = '0';
         setTimeout(() => {
@@ -556,7 +574,6 @@
     }
 
     function showQuestion() {
-        // If we ran out of questions, finish the quiz
         if (currentQIndex >= activeQuestions.length) {
             finishQuiz();
             return;
@@ -567,47 +584,39 @@
         const qText = document.getElementById('question-text');
         const optsContainer = document.getElementById('options-container');
 
-        // Reset the animation classes so the card fades in
         card.classList.remove('fading-out');
         card.style.display = 'block'; 
         setTimeout(() => {
             card.classList.add('active'); 
         }, 50);
         
-        // Set the Question Text
         qText.innerText = qData.q;
         optsContainer.innerHTML = '';
 
-        // Randomize the Answer buttons so they aren't always in same order
         let randomizedAnswers = [...qData.a];
         shuffleArray(randomizedAnswers);
 
-        // Create a button for each answer
         randomizedAnswers.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerText = opt.t; 
-            btn.onclick = () => handleAnswer(opt.h); // Pass the house code (h)
+            btn.onclick = () => handleAnswer(opt.h);
             optsContainer.appendChild(btn);
         });
     }
 
     function handleAnswer(houseName) {
-        // Play click sound
         clickFx.currentTime = 0;
         clickFx.play();
 
-        // Add point to the chosen house
         if (scores[houseName] !== undefined) {
             scores[houseName]++;
         }
 
-        // Animate card fading out
         const card = document.getElementById('quiz-container');
         card.classList.remove('active');
         card.classList.add('fading-out'); 
 
-        // Wait 800ms for animation, then show next question
         setTimeout(() => {
             card.style.display = 'none'; 
             currentQIndex++;
@@ -618,7 +627,6 @@
     function finishQuiz() {
         document.getElementById('quiz-container').style.display = 'none';
 
-        // Calculate Winner (Simple priority tie-breaker)
         let winner = 'Gryffindor';
         let maxScore = scores['Gryffindor'];
 
@@ -629,22 +637,16 @@
         displayResult(winner);
     }
 
-    /* ========================================
-     PART 4: RESULT DISPLAY (MODIFIED AS REQUESTED)
-     ========================================
-    */
     function displayResult(winnerName) {
         const resultScreen = document.getElementById('result-screen');
         const messageEl = document.getElementById('result-message');
         const descEl = document.getElementById('house-desc');
         const houseImg = document.getElementById('house-image');
         
-        // Get the specific data for the winning house
         const winnerConfig = HOUSE_CONFIG[winnerName];
 
-        // Reveal the result screen
         resultScreen.style.display = 'flex';
-        void resultScreen.offsetWidth; // Force browser to recognize the change
+        void resultScreen.offsetWidth; 
         
         revealFx.play();
 
@@ -652,20 +654,13 @@
             resultScreen.style.opacity = '1';
         }, 100);
 
-        // --- NEW DISPLAY LOGIC ---
-        // 1. Set the Image
+        // Set Image & Text
         houseImg.src = winnerConfig.image;
         houseImg.setAttribute("crossorigin", "anonymous"); 
 
-        // 2. Set the Text: "[Name] has been sorted into..." (Removed House Name text)
         messageEl.innerText = `${userName} has been sorted into...`;
-        
-        // 3. Set the Description (Poetic text)
         descEl.innerText = winnerConfig.description;
 
-        // NOTE: We do NOT set the House Name text anywhere now.
-
-        // Voice Announcement (Optional: keeps saying the house name audibly)
         const msg = new SpeechSynthesisUtterance();
         msg.rate = 0.8; 
         msg.pitch = 0.5;
@@ -676,7 +671,7 @@
     }
 
     /* ========================================
-     PART 5: UTILITIES (Download, Reset, Visuals)
+     PART 5: UTILITIES
      ========================================
     */
     function downloadResult() {
@@ -702,13 +697,11 @@
         resultScreen.style.opacity = '0';
         setTimeout(() => {
             resultScreen.style.display = 'none';
-            // Reset all game variables
             currentQIndex = 0;
             scores = { Gryffindor: 0, Ravenclaw: 0, Hufflepuff: 0, Slytherin: 0 };
             userName = ""; 
             activeQuestions = [];
             document.getElementById('user-name').value = ""; 
-            // Show Start Screen
             const startScreen = document.getElementById('start-screen');
             startScreen.style.display = 'flex';
             setTimeout(() => {
@@ -751,7 +744,6 @@
         update() {
             this.y -= this.speedY;
             this.x += this.speedX;
-            // Interaction with mouse/touch
             if (mouse.x) {
                 let dx = mouse.x - this.x; let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx*dx + dy*dy);
@@ -759,7 +751,6 @@
                     this.x -= dx / 20; this.y -= dy / 20;
                 }
             }
-            // Reset particle if it goes off screen
             if (this.y < 0) {
                 this.y = canvas.height; this.x = Math.random() * canvas.width;
             }
