@@ -10,8 +10,9 @@
     
     <style>
         /* ========================================
-         1. FONTS & VARIABLES
-         ========================================
+           1. CSS VARIABLES & FONTS
+           ========================================
+           Variables (defined in :root) let us change colors everywhere by changing one line.
         */
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap');
 
@@ -24,8 +25,8 @@
         }
 
         /* ========================================
-         2. PAGE SETUP
-         ========================================
+           2. GLOBAL RESET & BODY
+           ========================================
         */
         body, html {
             margin: 0;
@@ -35,12 +36,12 @@
             overflow: hidden; /* Prevents scrollbars */
             font-family: 'Lato', sans-serif;
             color: #fff;
-            touch-action: manipulation; /* Improves mobile tap response */
+            touch-action: manipulation; /* Makes buttons respond faster on mobile */
         }
 
         /* BACKGROUND IMAGE
-           - We use an <img> tag (id="bg-video") instead of CSS background.
-           - object-fit: cover ensures it fills the screen on mobile & desktop.
+           We use an <img> tag with object-fit: cover so it stretches nicely 
+           without distorting, unlike some CSS background properties.
         */
         #bg-video {
             position: fixed;
@@ -48,20 +49,20 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: -1; /* Puts it behind everything else */
             object-fit: cover;
         }
 
-        /* DARK OVERLAY (Makes text readable) */
+        /* Dark overlay to make text readable against the bright background */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.4); 
             z-index: 0;
-            pointer-events: none;
+            pointer-events: none; /* Lets clicks pass through to buttons below */
         }
 
-        /* ASH PARTICLES */
+        /* Canvas for the floating ash particles */
         #ashCanvas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -69,7 +70,37 @@
             pointer-events: none;
         }
 
-        /* MAIN CONTAINER */
+        /* ========================================
+           3. VOLUME CONTROL (NEW FEATURE)
+           ========================================
+           This styles the slider in the top right corner.
+        */
+        .volume-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100; /* High z-index to sit on top of everything */
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Lato', sans-serif;
+            font-size: 0.8rem;
+        }
+
+        /* Styling the slider range input */
+        input[type=range] {
+            accent-color: #ecb939; /* Gold color for the slider handle */
+            cursor: pointer;
+        }
+
+        /* ========================================
+           4. MAIN LAYOUT
+           ========================================
+        */
         .container {
             position: relative;
             z-index: 10;
@@ -84,12 +115,9 @@
             box-sizing: border-box;
         }
 
-        /* ========================================
-         3. START SCREEN
-         ========================================
-        */
+        /* Start Screen Styling */
         #start-screen {
-            transition: opacity 1s ease;
+            transition: opacity 1s ease; /* Smooth fade out effect */
             max-width: 600px;
             width: 100%;
             display: flex;
@@ -123,7 +151,7 @@
         }
         .name-input:focus {
             border-color: #fff;
-            box-shadow: 0 0 15px var(--glow-color);
+            box-shadow: 0 0 15px var(--glow-color); /* Glow effect on focus */
             background: rgba(0, 0, 0, 0.8);
         }
 
@@ -135,17 +163,17 @@
         }
 
         /* ========================================
-         4. QUIZ CARD STYLING
-         ========================================
+           5. QUIZ CARD ANIMATIONS
+           ========================================
         */
         .quiz-card {
             max-width: 600px;
             width: 100%;
-            display: none;
+            display: none; /* Hidden until quiz starts */
             opacity: 0;
-            transform: scale(0.8);
-            filter: blur(10px);
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.8); /* Starts slightly smaller */
+            filter: blur(10px);    /* Starts blurry */
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
         }
 
         .quiz-card.active {
@@ -155,11 +183,12 @@
             filter: blur(0);
         }
 
+        /* The animation when a question is answered */
         .quiz-card.fading-out {
             opacity: 0;
-            transform: scale(1.5);
-            filter: blur(20px);
-            pointer-events: none;
+            transform: scale(1.5); /* Grows larger */
+            filter: blur(20px);    /* Blurs out */
+            pointer-events: none;  /* Prevents clicking while fading */
         }
 
         .question-text {
@@ -178,6 +207,7 @@
             width: 100%;
         }
 
+        /* Option Buttons */
         .option-btn {
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255,255,255,0.6);
@@ -199,6 +229,7 @@
             background: rgba(255,255,255,0.1);
         }
 
+        /* The Shimmer Effect on Hover */
         .option-btn::after {
             content: '';
             position: absolute;
@@ -213,8 +244,8 @@
         }
 
         /* ========================================
-         5. RESULT SCREEN (Parchment)
-         ========================================
+           6. RESULT PARCHMENT (Modified)
+           ========================================
         */
         #result-screen {
             display: none;
@@ -238,34 +269,34 @@
             position: relative;
         }
 
+        /* Made the image slightly larger as requested since text is gone */
         #house-image {
-            width: 150px; 
-            height: 150px;
+            width: 180px; 
+            height: 180px;
             object-fit: contain;
-            margin-bottom: 15px;
+            margin: 20px 0;
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
         }
 
-        .house-announce {
-            font-size: 2.5rem;
-            text-transform: uppercase;
+        /* Removed styling for the House Name text since we are hiding it */
+        .result-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem; /* Larger introduction text */
+            margin-bottom: 5px;
             font-weight: 700;
-            margin: 10px 0;
-            display: block;
-            line-height: 1;
         }
 
         .house-description {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-style: italic;
             margin: 15px 0;
-            line-height: 1.4;
+            line-height: 1.5;
             padding: 10px 0;
             border-top: 1px solid var(--parchment-border);
             border-bottom: 1px solid var(--parchment-border);
         }
 
-        /* Action Buttons */
+        /* Start/Restart Buttons */
         .action-btn {
             padding: 12px 25px;
             font-size: 1rem;
@@ -285,6 +316,7 @@
             box-shadow: 0 0 20px white;
         }
 
+        /* Result Buttons (Dark style for paper) */
         .parchment-btn {
             color: var(--parchment-ink);
             border-color: var(--parchment-ink);
@@ -298,19 +330,15 @@
             box-shadow: 0 0 10px var(--parchment-ink);
         }
 
-        /* ========================================
-         6. MOBILE RESPONSIVENESS
-         ========================================
-        */
+        /* Mobile Breakpoints */
         @media only screen and (max-width: 600px) {
             h1 { font-size: 2.2rem; }
             .question-text { font-size: 1.3rem; }
             .option-btn { font-size: 1rem; padding: 12px 15px; }
-            .house-announce { font-size: 2rem; }
-            #house-image { width: 120px; height: 120px; }
-            
+            #house-image { width: 140px; height: 140px; }
             .button-group { flex-direction: column; align-items: center; }
             .action-btn { width: 100%; max-width: 300px; }
+            .volume-control { top: 10px; right: 10px; padding: 5px; }
         }
     </style>
 </head>
@@ -320,6 +348,11 @@
 
     <div class="overlay"></div>
     <canvas id="ashCanvas"></canvas>
+
+    <div class="volume-control">
+        <span>Sound:</span>
+        <input type="range" id="volume-slider" min="0" max="100" value="50">
+    </div>
 
     <audio id="ambience-sound" loop>
         <source src="assets/fireplace.mp3" type="audio/mpeg"> 
@@ -352,10 +385,11 @@
 
         <div id="result-screen">
             <div class="parchment-box" id="capture-area">
-                <img id="house-image" src="" alt="House Crest" crossorigin="anonymous">
                 
                 <p class="result-text" id="result-message"></p>
-                <span id="house-result" class="house-announce"></span>
+
+                <img id="house-image" src="" alt="House Crest" crossorigin="anonymous">
+                
                 <p class="house-description" id="house-desc"></p>
                 
                 <div data-html2canvas-ignore="true">
@@ -368,14 +402,14 @@
 
 <script>
     /* ========================================
-     PART 1: CONFIGURATION (FIXED FOR GITHUB)
+     PART 1: CONFIGURATION
      ========================================
-     I fixed the syntax error here. You must use quotes around strings.
-     Ensure your files in the 'assets' folder are named exactly like this (lowercase).
+     Defining the House data. 
+     Note: Use 'assets/lion.png' etc. based on your GitHub folder.
     */
-    
     const HOUSE_CONFIG = {
         "Gryffindor": {
+            // Poetic description
             description: "You are a warrior at heart. Defined by your courage and daring, you stand tall when others falter and fight for what is right, no matter the cost.",
             color: "#740001", 
             image: "assets/lion.png" 
@@ -397,7 +431,7 @@
         }
     };
 
-    // Master Question List
+    // The Master list of questions. (Shortened in comments, full in code)
     const ALL_QUESTIONS = [
       { id:"q1", q:"Which of the following would you most hate people to call you?", a:[{t:"Ordinary", h:"Ravenclaw"}, {t:"Ignorant", h:"Slytherin"}, {t:"Cowardly", h:"Gryffindor"}, {t:"Selfish", h:"Hufflepuff"}]},
       { id:"q2", q:"After you have died, how would you like people to remember you?", a:[{t:"Miss you, but smile", h:"Hufflepuff"}, {t:"Ask for stories of your adventures", h:"Gryffindor"}, {t:"Think with admiration of your achievements", h:"Slytherin"}, {t:"I don't care what people think after I'm dead", h:"Ravenclaw"}]},
@@ -431,7 +465,7 @@
     ];
 
     /* ========================================
-     PART 2: STATE & HELPERS
+     PART 2: VARIABLES & SOUND SETUP
      ========================================
     */
     let scores = { Gryffindor: 0, Ravenclaw: 0, Hufflepuff: 0, Slytherin: 0 };
@@ -439,12 +473,47 @@
     let userName = "";
     let activeQuestions = []; 
 
-    // Audio Refs
+    // Getting the HTML Audio elements by their IDs
     const ambience = document.getElementById('ambience-sound');
     const clickFx = document.getElementById('click-sound');
     const revealFx = document.getElementById('reveal-sound');
+    const volSlider = document.getElementById('volume-slider');
 
-    // Helper: Fisher-Yates Shuffle for randomizing arrays
+    // --- FEATURE 1: VOLUME CONTROL LOGIC ---
+    // When the slider moves, we update the volume of all 3 sounds.
+    // Audio volume ranges from 0.0 (mute) to 1.0 (max).
+    // Our slider is 0 to 100, so we divide by 100.
+    volSlider.addEventListener('input', function() {
+        const volumeValue = this.value / 100; 
+        ambience.volume = volumeValue;
+        clickFx.volume = volumeValue;
+        revealFx.volume = volumeValue;
+    });
+
+    // Initialize volume on load
+    ambience.volume = 0.5;
+    clickFx.volume = 0.5;
+    revealFx.volume = 0.5;
+
+    // --- FEATURE 2: AUTO-START AMBIENCE LOGIC ---
+    // Browsers block audio from playing automatically to prevent annoyance.
+    // We try to play it immediately. If it fails (caught by .catch),
+    // we set up a "one-time" listener so it plays the moment the user clicks ANYWHERE.
+    window.addEventListener('load', () => {
+        const playPromise = ambience.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Auto-play prevented by browser. Waiting for user interaction.");
+                // Add a listener to the whole document body
+                document.body.addEventListener('click', () => {
+                    ambience.play();
+                }, { once: true }); // 'once: true' means it runs only the first time you click
+            });
+        }
+    });
+
+    // Helper: Fisher-Yates Shuffle (Randomizes array order)
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -454,7 +523,7 @@
     }
 
     /* ========================================
-     PART 3: GAME LOGIC
+     PART 3: GAMEPLAY FUNCTIONS
      ========================================
     */
 
@@ -468,22 +537,18 @@
         }
         userName = name; 
 
-        // Play audio (Requires user interaction first)
-        ambience.volume = 0.4;
-        ambience.play().catch(e => console.log("Audio waiting for interaction"));
+        // Ensure ambience is playing if it hasn't started yet
+        ambience.play().catch(e => console.log("Audio waiting..."));
 
-        // Prepare Random Questions
+        // Shuffle all questions and pick the number requested (10 or 29)
         let shuffled = [...ALL_QUESTIONS]; 
         shuffleArray(shuffled);
-        
-        // Slice the array based on user choice (10 or 29)
         const limit = Math.min(numToAsk, shuffled.length);
         activeQuestions = shuffled.slice(0, limit);
 
-        // Hide start screen / Show Quiz
+        // Fade out start screen, wait 1 second, show question
         const startScreen = document.getElementById('start-screen');
         startScreen.style.opacity = '0';
-        
         setTimeout(() => {
             startScreen.style.display = 'none';
             showQuestion();
@@ -491,6 +556,7 @@
     }
 
     function showQuestion() {
+        // If we ran out of questions, finish the quiz
         if (currentQIndex >= activeQuestions.length) {
             finishQuiz();
             return;
@@ -501,44 +567,47 @@
         const qText = document.getElementById('question-text');
         const optsContainer = document.getElementById('options-container');
 
-        // Reset Animation classes
+        // Reset the animation classes so the card fades in
         card.classList.remove('fading-out');
         card.style.display = 'block'; 
         setTimeout(() => {
-            card.classList.add('active'); // Trigger "appear" animation
+            card.classList.add('active'); 
         }, 50);
         
+        // Set the Question Text
         qText.innerText = qData.q;
         optsContainer.innerHTML = '';
 
-        // Randomize the order of answer buttons
+        // Randomize the Answer buttons so they aren't always in same order
         let randomizedAnswers = [...qData.a];
         shuffleArray(randomizedAnswers);
 
+        // Create a button for each answer
         randomizedAnswers.forEach(opt => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
             btn.innerText = opt.t; 
-            btn.onclick = () => handleAnswer(opt.h);
+            btn.onclick = () => handleAnswer(opt.h); // Pass the house code (h)
             optsContainer.appendChild(btn);
         });
     }
 
     function handleAnswer(houseName) {
+        // Play click sound
         clickFx.currentTime = 0;
         clickFx.play();
 
-        // Increment Score
+        // Add point to the chosen house
         if (scores[houseName] !== undefined) {
             scores[houseName]++;
         }
 
-        // Trigger "Disintegrate" Animation
+        // Animate card fading out
         const card = document.getElementById('quiz-container');
         card.classList.remove('active');
         card.classList.add('fading-out'); 
 
-        // Wait for animation (800ms) then load next
+        // Wait 800ms for animation, then show next question
         setTimeout(() => {
             card.style.display = 'none'; 
             currentQIndex++;
@@ -549,7 +618,7 @@
     function finishQuiz() {
         document.getElementById('quiz-container').style.display = 'none';
 
-        // Tie-Breaker Logic (Priority order: G > R > H > S)
+        // Calculate Winner (Simple priority tie-breaker)
         let winner = 'Gryffindor';
         let maxScore = scores['Gryffindor'];
 
@@ -560,17 +629,22 @@
         displayResult(winner);
     }
 
+    /* ========================================
+     PART 4: RESULT DISPLAY (MODIFIED AS REQUESTED)
+     ========================================
+    */
     function displayResult(winnerName) {
         const resultScreen = document.getElementById('result-screen');
-        const houseNameEl = document.getElementById('house-result');
         const messageEl = document.getElementById('result-message');
         const descEl = document.getElementById('house-desc');
         const houseImg = document.getElementById('house-image');
         
+        // Get the specific data for the winning house
         const winnerConfig = HOUSE_CONFIG[winnerName];
 
+        // Reveal the result screen
         resultScreen.style.display = 'flex';
-        void resultScreen.offsetWidth; // Force Reflow
+        void resultScreen.offsetWidth; // Force browser to recognize the change
         
         revealFx.play();
 
@@ -578,18 +652,20 @@
             resultScreen.style.opacity = '1';
         }, 100);
 
-        // Update Elements
+        // --- NEW DISPLAY LOGIC ---
+        // 1. Set the Image
         houseImg.src = winnerConfig.image;
-        houseImg.setAttribute("crossorigin", "anonymous"); // Essential for download if on same domain
+        houseImg.setAttribute("crossorigin", "anonymous"); 
 
-        messageEl.innerText = `${userName} has been sorted to`;
-        houseNameEl.innerText = winnerName;
-        houseNameEl.style.color = winnerConfig.color;
-        houseNameEl.style.textShadow = `1px 1px 0px rgba(0,0,0,0.5)`;
-
+        // 2. Set the Text: "[Name] has been sorted into..." (Removed House Name text)
+        messageEl.innerText = `${userName} has been sorted into...`;
+        
+        // 3. Set the Description (Poetic text)
         descEl.innerText = winnerConfig.description;
 
-        // Speak Result
+        // NOTE: We do NOT set the House Name text anywhere now.
+
+        // Voice Announcement (Optional: keeps saying the house name audibly)
         const msg = new SpeechSynthesisUtterance();
         msg.rate = 0.8; 
         msg.pitch = 0.5;
@@ -600,18 +676,16 @@
     }
 
     /* ========================================
-     PART 4: DOWNLOAD FEATURE
+     PART 5: UTILITIES (Download, Reset, Visuals)
      ========================================
     */
     function downloadResult() {
         const element = document.getElementById("capture-area");
         
-        // Note: html2canvas requires images to be on the same server (hosted locally) 
-        // to avoid security errors (CORS).
         html2canvas(element, {
             backgroundColor: null,
-            useCORS: true,
-            scale: 2 // High resolution
+            useCORS: true, 
+            scale: 2 
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = `${userName}_Sorting_Ceremony.png`;
@@ -619,7 +693,7 @@
             link.click();
         }).catch(err => {
             console.error("Screenshot failed:", err);
-            alert("Could not create image. Please ensure you are running this on a live server (GitHub Pages) and not opening the HTML file directly.");
+            alert("Could not download.");
         });
     }
 
@@ -628,11 +702,13 @@
         resultScreen.style.opacity = '0';
         setTimeout(() => {
             resultScreen.style.display = 'none';
+            // Reset all game variables
             currentQIndex = 0;
             scores = { Gryffindor: 0, Ravenclaw: 0, Hufflepuff: 0, Slytherin: 0 };
             userName = ""; 
             activeQuestions = [];
             document.getElementById('user-name').value = ""; 
+            // Show Start Screen
             const startScreen = document.getElementById('start-screen');
             startScreen.style.display = 'flex';
             setTimeout(() => {
@@ -641,10 +717,7 @@
         }, 1000);
     }
 
-    /* ========================================
-     PART 5: VISUALS (ASH PARTICLES)
-     ========================================
-    */
+    // --- ASH PARTICLES ANIMATION ---
     const canvas = document.getElementById('ashCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -661,7 +734,6 @@
         mouse.x = e.x; mouse.y = e.y;
     });
     
-    // Add touch support for particles
     window.addEventListener('touchmove', (e) => {
         mouse.x = e.touches[0].clientX;
         mouse.y = e.touches[0].clientY;
@@ -679,6 +751,7 @@
         update() {
             this.y -= this.speedY;
             this.x += this.speedX;
+            // Interaction with mouse/touch
             if (mouse.x) {
                 let dx = mouse.x - this.x; let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx*dx + dy*dy);
@@ -686,6 +759,7 @@
                     this.x -= dx / 20; this.y -= dy / 20;
                 }
             }
+            // Reset particle if it goes off screen
             if (this.y < 0) {
                 this.y = canvas.height; this.x = Math.random() * canvas.width;
             }
