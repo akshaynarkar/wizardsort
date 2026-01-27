@@ -3,125 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetricSide Clone | Wizard Eye & Fortune Manager</title>
-    <link rel="stylesheet" href="style.css">
+    <title>METRICS | Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="app-container">
+    <div class="terminal-container">
         <nav class="sidebar">
-            <div class="brand">MetricSide<span class="lite">.clone</span></div>
-            <ul class="nav-links">
-                <li class="active" onclick="switchTool('wizard-eye')">👁️ Wizard Eye</li>
-                <li onclick="switchTool('fortune-manager')">💰 Fortune Manager</li>
-            </ul>
+            <div class="logo">M.SIDE<span class="blinking-cursor">_</span></div>
+            
+            <div class="nav-group">
+                <div class="nav-label">TOOLS</div>
+                <button class="nav-item active" onclick="switchTab('wizard')">
+                    <span class="icon">👁‍🗨</span> Wizard Eye
+                </button>
+                <button class="nav-item" onclick="switchTab('fortune')">
+                    <span class="icon">⚡</span> Fortune Mgr
+                </button>
+            </div>
+
+            <div class="nav-group bottom">
+                <div class="status-indicator online">System Online</div>
+            </div>
         </nav>
 
-        <main class="content">
+        <main class="main-view">
             
-            <div id="wizard-eye" class="tool-section">
-                <header class="tool-header">
-                    <h2>Wizard Eye <span class="subtitle">Deep Fundamental X-Ray</span></h2>
-                    <input type="text" placeholder="Enter Ticker (e.g., AAPL)..." class="search-bar">
+            <div id="wizard" class="view-section">
+                <header class="top-bar">
+                    <h1>WIZARD EYE <span class="tag">FUNDAMENTAL X-RAY</span></h1>
+                    <div class="search-complex">
+                        <span class="prefix">$</span>
+                        <input type="text" placeholder="TICKER" value="NVDA">
+                    </div>
                 </header>
 
-                <div class="data-grid">
-                    <div class="card">
-                        <h3>1. Fundamental Ratios</h3>
-                        <table class="metric-table">
-                            <thead><tr><th>Metric</th><th>Value</th><th>vs Sector</th></tr></thead>
+                <div class="grid-layout">
+                    <div class="panel">
+                        <div class="panel-header">01 // FUNDAMENTAL RATIOS</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>METRIC</th><th>VAL</th><th>VS SECTOR</th></tr>
+                            </thead>
                             <tbody>
-                                <tr><td>P/E Ratio</td><td class="num">24.5</td><td class="bad">+5%</td></tr>
-                                <tr><td>ROIC</td><td class="num">18.2%</td><td class="good">+12%</td></tr>
-                                <tr><td>Debt/Equity</td><td class="num">0.45</td><td class="good">-10%</td></tr>
+                                <tr><td>P/E (TTM)</td><td class="mono">64.2x</td><td class="text-red">High</td></tr>
+                                <tr><td>EV/EBITDA</td><td class="mono">45.1x</td><td class="text-red">High</td></tr>
+                                <tr><td>ROIC</td><td class="mono">48.5%</td><td class="text-green">Top 1%</td></tr>
+                                <tr><td>Gross Margin</td><td class="mono">76.0%</td><td class="text-green">Top 5%</td></tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="card">
-                        <h3>2. Cash Flows (TTM)</h3>
-                        <div class="cf-row"><span>Operating Cash Flow</span> <span class="val">$102B</span></div>
-                        <div class="cf-row"><span>CapEx</span> <span class="val neg">($12B)</span></div>
-                        <div class="cf-row highlight"><span>Free Cash Flow</span> <span class="val">$90B</span></div>
+                    <div class="panel">
+                        <div class="panel-header">02 // CASH FLOW ENGINES</div>
+                        <div class="stat-row">
+                            <span>OCF (Operating)</span>
+                            <span class="mono text-blue">$28.1B</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>CapEx</span>
+                            <span class="mono text-gray">($3.2B)</span>
+                        </div>
+                        <div class="stat-row highlight">
+                            <span>Free Cash Flow</span>
+                            <span class="mono text-green">$24.9B</span>
+                        </div>
+                        <div class="mini-chart-container">
+                            <canvas id="cfChart"></canvas>
+                        </div>
                     </div>
 
-                    <div class="card">
-                        <h3>3. Analyst Ratings</h3>
-                        <div class="rating-meter">
-                            <div class="bar-container">
-                                <div class="bar buy" style="width: 60%">Buy (60%)</div>
-                                <div class="bar hold" style="width: 30%">Hold (30%)</div>
-                                <div class="bar sell" style="width: 10%">Sell</div>
-                            </div>
-                            <p class="consensus">Consensus: <strong>Outperform</strong></p>
+                    <div class="panel">
+                        <div class="panel-header">03 // ANALYST SENTIMENT</div>
+                        <div class="sentiment-box">
+                            <div class="rating-huge text-green">BUY</div>
+                            <div class="consensus-detail">42 Analysts</div>
+                        </div>
+                        <div class="bar-stack">
+                            <div class="bar-seg green" style="width: 80%"></div>
+                            <div class="bar-seg yellow" style="width: 15%"></div>
+                            <div class="bar-seg red" style="width: 5%"></div>
+                        </div>
+                        <div class="legend">
+                            <span><span class="dot green"></span> Buy (80%)</span>
+                            <span><span class="dot yellow"></span> Hold (15%)</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="fortune-manager" class="tool-section hidden">
-                <header class="tool-header">
-                    <h2>Fortune Manager <span class="subtitle">Kelly Criterion Allocation</span></h2>
+            <div id="fortune" class="view-section hidden">
+                <header class="top-bar">
+                    <h1>FORTUNE MANAGER <span class="tag">KELLY OPTIMIZER</span></h1>
                 </header>
 
-                <div class="kelly-interface">
-                    <div class="controls-panel">
-                        <div class="input-group">
-                            <label>Tickers (comma separated)</label>
-                            <input type="text" id="kelly-tickers" value="AAPL, MSFT, GOOGL">
+                <div class="control-deck">
+                    <div class="control-group">
+                        <label>ASSETS (CSV)</label>
+                        <input type="text" id="k-tickers" value="META, AMZN, GOOG, MSFT">
+                    </div>
+                    <div class="control-group">
+                        <label>CAPITAL ($)</label>
+                        <input type="number" id="k-cash" value="50000">
+                    </div>
+                    <div class="control-group">
+                        <label>MODE</label>
+                        <div class="radio-pill">
+                            <label class="active"><input type="radio" name="kelly" value="1" checked> Full</label>
+                            <label><input type="radio" name="kelly" value="0.5"> Half</label>
+                            <label><input type="radio" name="kelly" value="0.25"> Qtr</label>
                         </div>
-                        <div class="input-group">
-                            <label>Total Cash ($)</label>
-                            <input type="number" id="kelly-cash" value="100000">
-                        </div>
-                        <div class="input-group">
-                            <label>Backtest Range (For Win/Loss Calc)</label>
-                            <input type="date" value="2020-01-01"> to <input type="date" value="2023-12-31">
-                        </div>
-                        <div class="kelly-options">
-                            <label>Kelly Aggression:</label>
-                            <div class="radio-group">
-                                <label><input type="radio" name="kelly" value="1" checked> Full Kelly (Aggressive)</label>
-                                <label><input type="radio" name="kelly" value="0.5"> Half Kelly (Balanced)</label>
-                                <label><input type="radio" name="kelly" value="0.25"> Quarter Kelly (Safe)</label>
+                    </div>
+                    <button class="run-btn" onclick="runKelly()">EXECUTE STRATEGY</button>
+                </div>
+
+                <div id="kelly-output" class="hidden">
+                    <div class="split-view">
+                        <div class="panel chart-panel">
+                            <div class="panel-header">ALLOCATION MODEL</div>
+                            <div class="pie-wrapper">
+                                <canvas id="kellyPie"></canvas>
                             </div>
                         </div>
-                        <button class="action-btn" onclick="calculateKelly()">Run Allocation</button>
-                    </div>
-
-                    <div class="results-panel hidden" id="kelly-results">
                         
-                        <div class="chart-container">
-                            <canvas id="allocationPie"></canvas>
-                        </div>
-
-                        <table class="kelly-table">
-                            <thead>
-                                <tr>
-                                    <th onclick="sortTable(0)">Ticker ⬍</th>
-                                    <th>Win Rate (P)</th>
-                                    <th>Win/Loss (R)</th>
-                                    <th>Kelly %</th>
-                                    <th>Cash Alloc ($)</th>
-                                    <th>Rationale</th>
-                                </tr>
-                            </thead>
-                            <tbody id="kelly-table-body">
-                                </tbody>
-                        </table>
-
-                        <div id="trend-detail" class="trend-modal hidden">
-                            <h3>Trend Analysis: <span id="trend-ticker"></span></h3>
-                            <p class="explanation">Green lines indicate winning trades, Red indicate losses during backtest period.</p>
-                            <canvas id="trendChart"></canvas>
+                        <div class="panel table-panel">
+                            <div class="panel-header">ORDER BOOK</div>
+                            <table class="data-table interactive">
+                                <thead>
+                                    <tr>
+                                        <th>ASSET</th>
+                                        <th>WIN%</th>
+                                        <th>KELLY%</th>
+                                        <th>CASH ($)</th>
+                                        <th>SIGNAL</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="kelly-body"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-            </div>
 
+                <div id="trend-modal" class="modal-overlay hidden" onclick="closeModal()">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-header">
+                            <span id="modal-ticker">TICKER</span>
+                            <button onclick="closeModal()">✕</button>
+                        </div>
+                        <canvas id="trendChart"></canvas>
+                        <div class="legend-row">
+                            <span class="text-green">― WIN TREND</span>
+                            <span class="text-red">― LOSS TREND</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </main>
     </div>
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
