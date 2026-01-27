@@ -1,0 +1,46 @@
+:root {
+    --primary: #0056b3;
+    --bg-sidebar: #f4f4f4;
+    --border: #e0e0e0;
+    --text: #333;
+    --win: #28a745;
+    --loss: #dc3545;
+}
+
+body { font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; margin: 0; color: var(--text); display: flex; height: 100vh; }
+.app-container { display: flex; width: 100%; }
+
+/* Sidebar */
+.sidebar { width: 250px; background: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 20px; }
+.brand { font-size: 24px; font-weight: bold; margin-bottom: 40px; color: var(--primary); }
+.nav-links li { padding: 15px; cursor: pointer; border-radius: 6px; margin-bottom: 5px; }
+.nav-links li:hover, .nav-links li.active { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); font-weight: 600; }
+
+/* Content */
+.content { flex: 1; padding: 40px; overflow-y: auto; background: #fff; }
+.tool-header { margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+.hidden { display: none; }
+
+/* Wizard Eye Grid */
+.data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.card { border: 1px solid var(--border); padding: 20px; border-radius: 8px; }
+.metric-table { width: 100%; border-collapse: collapse; }
+.metric-table td { padding: 8px; border-bottom: 1px solid #eee; }
+.good { color: var(--win); font-weight: bold; }
+.bad { color: var(--loss); font-weight: bold; }
+
+/* Fortune Manager */
+.controls-panel { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+.input-group { margin-bottom: 15px; display: flex; flex-direction: column; }
+.input-group input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+.kelly-options { margin: 20px 0; }
+.radio-group label { margin-right: 20px; cursor: pointer; }
+.action-btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+
+.kelly-table { width: 100%; margin-top: 30px; border-collapse: collapse; }
+.kelly-table th { text-align: left; padding: 10px; background: #eee; cursor: pointer; }
+.kelly-table td { padding: 10px; border-bottom: 1px solid #eee; }
+
+/* Charts */
+.chart-container { width: 400px; margin: 0 auto; }
+.trend-modal { margin-top: 40px; border: 1px solid var(--border); padding: 20px; border-radius: 8px; }
